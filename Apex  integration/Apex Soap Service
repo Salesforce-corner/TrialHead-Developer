@@ -1,0 +1,44 @@
+-------------------------------------------------ParkLocator------------------------------------------
+public class ParkLocator {
+    public static List<string> country(String country){
+        ParkService.parksImplport prksvc = new ParkService.parksImplport();
+        return prksvc.byCountry(country);
+    }
+}
+
+-------------------------------------------------ParkLocatorTest---------------------------------------
+
+
+@isTest
+public class ParkLocatorTest {
+    @isTest static void testCallout(){
+        test.setMock(WebServiceMock.class, new ParkServiceMock());
+        string country = 'united states';
+        List<string> expectedParks = new List<String>{'Yosemite','Sequoia','Crater Lake'};
+        System.assertEquals(expectedParks, parkLocator.country(country));
+    }
+
+}
+
+-------------------------------------------------ParkServiceMock-----------------------------------------
+
+@isTest
+global class ParkServiceMock implements webservicemock{
+    global void doInvoke(
+        object stub,
+        object request,
+        map<String, Object> response,
+        String endpoint,
+        String SoapAction,
+        String requestName,
+        String responseNS,
+        String responseName,
+        String responseType) {
+            parkService.byCountryResponse response_x = new parkService.byCountryResponse();
+            response_x.return_x = new List<String>{'Yosemite','Sequoia','Crater Lake'};
+            response.put('response_x', response_x);
+        }
+}
+
+
+----------------------------------------------------------------------------------------------------------
