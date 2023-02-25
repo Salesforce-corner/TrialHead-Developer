@@ -1,0 +1,38 @@
+---------------------------------------------AccountManager-------------------------------------
+@RestResource(urlMapping='/Accounts/*/contacts')
+global class AccountManager {
+    
+    @HttpGet
+    global static account getAccount(){
+        RestRequest request = RestContext.request;
+        string accountid = request.requestURI.substringBetween('/Accounts/','/contacts');
+        account result = [SELECT ID, Name, (select id, firstname, Lastname from contacts)
+                                           from account where ID = :accountId];
+        return result;
+    }
+ 
+}
+---------------------------------------AccountManagerTest--------------------------------------------
+@isTest
+public class AccountManagerTest {
+    
+    @isTest
+    static void testGetAccount(){
+        Account a = new Account(name='TestAccount');
+        insert a;
+        contact c = new contact(AccountId = a.id, FirstName = 'test', LastName = 'Test');
+        insert c;
+        
+        RestRequest request = new RestRequest();
+        request.requestURI = 'https://playful-raccoon-aipmky-dev-ed.trailblaze.my.salesforce.com/services/apexrest/Accounts/'+a.id+'/contacts';
+        request.httpMethod = 'GET';
+        RestContext.request = request;
+        
+        
+        Account myAcct = AccountManager.getAccount();
+        //verify results
+        //
+        system.assertEquals('TestAccount', myAcct.Name);
+    }
+
+}
