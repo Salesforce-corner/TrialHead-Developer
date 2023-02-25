@@ -1,0 +1,66 @@
+------------------------------------AnimalLocator class--------------------------------------------------
+
+public class AnimalLocator {
+    public static string getAnimalNameById(integer Id){
+        Http http = new Http();
+        HttpRequest request = new HttpRequest();
+        request.setEndpoint('https://th-apex-http-callout.herokuapp.com/animals/'+Id);
+        request.setMethod('GET');
+        HttpResponse response = http.send(request);
+        
+       
+            Map<String, Object> result = (Map<String, Object>)JSON.deserializeUntyped(response.getBody());
+            Map<String, Object> animal = (Map<String, Object>)result.get('animal');
+            String name = String.valueOf(animal.get('name'));
+            system.debug(name);
+            return name;
+        } 
+            
+    }
+
+--------------------------------AnimalLocatorMock----------------------------------------------------------
+@isTest
+global class AnimalLocatorMock implements HttpCalloutMock {
+    // Implement this interface method
+    global HTTPResponse respond(HTTPRequest request) {
+        // Create a fake response
+        HttpResponse response = new HttpResponse();
+        response.setHeader('Content-Type', 'application/json');
+        response.setBody('{"animal": {"id": 1, "name":"moose", "eats": "plants", "says":"bellows"}}');
+        response.setStatusCode(200);
+        return response; 
+    }
+}
+
+-----------------------------AnimalLocatorTest-------------------------------------------------------------
+
+@isTest
+public class AnimalLocatorTest {
+    
+    @isTest
+    static void animallocatorTest1(){
+        
+    	Test.setMock(HttpCalloutMock.class, new AnimalLocatorMock()); 
+        String actual = AnimalLocator.getAnimalNameById(1);
+        String expected = 'moose';
+        //System.assertEquals(200, response.getStatusCode());
+        System.assertEquals(actual, expected);
+    
+    }
+    
+    @isTest
+    static void animallocatorTest2(){
+        
+    	Test.setMock(HttpCalloutMock.class, new AnimalLocatorMock()); 
+        String actual = AnimalLocator.getAnimalNameById(2);
+        String expected = null;
+        //System.assertEquals(200, response.getStatusCode());
+        System.assertEquals(actual, expected);
+    
+    }
+}
+
+
+
+
+
