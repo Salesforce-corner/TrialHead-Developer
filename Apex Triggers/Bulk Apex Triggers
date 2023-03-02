@@ -1,0 +1,14 @@
+trigger ClosedOpportunityTrigger on Opportunity (after insert, after Update) {
+	lIST<Opportunity> OppList = [select id, StageName from Opportunity 
+                                Where StageName = 'Closed Won' and Id in :Trigger.new];
+    
+    List<Task> Tasks = new List<Task>();
+    
+    for(Opportunity Opp : OppList){
+        Tasks.add(new Task(Subject = 'Follow Up Test Task', WhatId = opp.id));
+    }
+    
+    if(Tasks.size() > 0){
+        insert Tasks;
+    }
+}
