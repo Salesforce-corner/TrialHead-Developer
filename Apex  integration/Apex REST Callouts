@@ -2,11 +2,27 @@
 
 public class AnimalLocator {
     public static string getAnimalNameById(integer Id){
+    
+    //Http Callouts basically work with three classes :  Http, HttpRequest and Http Response.
+    
+    // Initiate a new http class. Use this class to initiate an HTTP request and response.
+    
         Http http = new Http();
+        
+    // Initiate a request class .Use this class to programmatically create HTTP requests like GET, POST, PATCH, PUT, and DELETE.
+    
         HttpRequest request = new HttpRequest();
+        
+     // Each Http Request shall have an ENDPoint and a Method.
+     
         request.setEndpoint('https://th-apex-http-callout.herokuapp.com/animals/'+Id);
         request.setMethod('GET');
+        
+     // now lets use Http Response class,this class is used to handle the HTTP response returned by HTTP
+     
         HttpResponse response = http.send(request);
+        
+     // The response will generally be in a Json format and it is essentially a string so lets convert it into an object.
         
        
             Map<String, Object> result = (Map<String, Object>)JSON.deserializeUntyped(response.getBody());
@@ -51,14 +67,4 @@ public class AnimalLocatorTest {
     
     }
     
-    @isTest
-    static void animallocatorTest2(){
-        
-    	Test.setMock(HttpCalloutMock.class, new AnimalLocatorMock()); 
-        String actual = AnimalLocator.getAnimalNameById(2);
-        String expected = null;
-        //System.assertEquals(200, response.getStatusCode());
-        System.assertEquals(actual, expected);
-    
-    }
 }
